@@ -110,32 +110,32 @@
         "signature": "63b66918290d794f73832a6d0325be5026236674fe8c0cb0b68d162000d7bbe8"
       },
       "../src/types.ts": {
-        "version": "9e964dfe022dad4d904759dad3e59f25d87aa8d72390250b0eeea30531f01505",
-        "signature": "c30cdc5bf5a57d0d7fa7869c3c3ef04a7748e97158546be9747b6498ce6612d0"
-      },
-      "../src/utils.ts": {
-        "version": "3c465eceb99ac2dc1ca2cd1347ea075569d623d7e986721403bf9c340144c870",
-        "signature": "32bb44dc3734951e3c73f1cbeb75089e6babff57a80faa04bcf96b8fbb6a79c1"
+        "version": "26563f9872f9d443dcfc19ad8d2872c487f6ee404465861bc6da992b82fb4112",
+        "signature": "7e4ba12f36826c503ec2a3f23476d4931df94879366f29a039c0dd6cc124e9fa"
       },
       "../src/structures.ts": {
-        "version": "6233c25e559c9ba28ce4e1015e9573db4341e477705ea2774f92fdddc3da5516",
-        "signature": "a7fe26adc6b023f24bb772deb77884b1c1cde4ff56139f6363b1cc08133ed332"
+        "version": "8563b22f7daa0956186e69cf5c7b311b7ee57bd986126ca730440d81d5f90e7d",
+        "signature": "274913c9f8120be71c19fe01604856094710990f68a930d56636d3aa9fc14666"
+      },
+      "../src/utils.ts": {
+        "version": "acb129b2c116e1dd1beeedf7218a03039e092499358da49460c474365bd5a5cb",
+        "signature": "d3ce85e7fce2a2a98ad2f32995047738fd2ff44b499883b32c69fcac418970bf"
       },
       "../src/markup2mir.ts": {
-        "version": "ee3105cdbca6d98f5fa0a20d10ce4ab1a29ef386af75a2da4c73322cb328effd",
+        "version": "76f800521ec3363d0b619aa8fbdb2d548166c43a3b18c2d4d6fafba644daf342",
         "signature": "5fecc778b239e348362f645383ea1ff5ef497d21daa4969fb18905c8a9e0985b"
       },
       "../src/radon.ts": {
-        "version": "3bf86f4326ebbde5310ac3beb9dfb28d44a2a7557a5d625ca5a36b516a49bad6",
-        "signature": "b18584c8b77080fed3eb4141f563eff99a76b3c6624936571a7e9261d5e12c11"
+        "version": "08d142f26340c9ffbe9ce68c5e967e4e88f8fb5e83aee1fc433d18dec94d7a65",
+        "signature": "31857c439008940cf223b6a18f1ba02025ffbe6ac7dc9ec36b1ade667eea5acf"
       },
       "../src/mir2markup.ts": {
-        "version": "5151658730a241dc7bd302abea5c2d72c9bf4dfeaae11538072c59b9b707fffc",
+        "version": "c99b643d306a64b2f2aa8e3ed2851ae15aa9cd426a21e772cd4682234c1ca583",
         "signature": "04d375bdd67189c9e35677be9b0c6172df66388322324a78bcf1113ffc019cd7"
       },
       "../src/index.ts": {
-        "version": "a319f2c2609e3720180109197433984f5039ce49d1597b7e438074886a9e12b5",
-        "signature": "754dbb638f6c013409fc089eb9cae205b2fa9f6b94e94ee842c09fdffaa59b57"
+        "version": "374be3454fd46d627919e73dce55d91e1ddd08d7671b68c858435126505e0e02",
+        "signature": "1e9d2925f866ca06bbc5ce6e11a40753cd16bdef78c462977ea4740e42fa1393"
       },
       "../node_modules/@babel/types/lib/index.d.ts": {
         "version": "e8c8045d31df75a2031be9d0e96274b26a394f48e6eac6a7cbb1b778d16d74ac",
@@ -580,15 +580,14 @@
         "../node_modules/@types/node/util.d.ts",
         "../node_modules/@types/node/ts3.2/util.d.ts"
       ],
-      "../src/utils.ts": [
+      "../src/structures.ts": [
+        "../src/types.ts",
         "../node_modules/@types/node/fs.d.ts",
         "../node_modules/@types/node/ts3.2/fs.d.ts",
         "../node_modules/@types/node/util.d.ts",
         "../node_modules/@types/node/ts3.2/util.d.ts"
       ],
-      "../src/structures.ts": [
-        "../src/types.ts",
-        "../src/utils.ts",
+      "../src/utils.ts": [
         "../node_modules/@types/node/fs.d.ts",
         "../node_modules/@types/node/ts3.2/fs.d.ts",
         "../node_modules/@types/node/util.d.ts",
@@ -626,6 +625,7 @@
         "../src/markup2mir.ts",
         "../src/radon.ts",
         "../src/mir2markup.ts",
+        "../src/types.ts",
         "../node_modules/@types/node/fs.d.ts",
         "../node_modules/@types/node/ts3.2/fs.d.ts",
         "../node_modules/@types/node/util.d.ts",
@@ -1271,6 +1271,9 @@
       "../src/markup2mir.ts": [
         "../src/types.ts"
       ],
+      "../src/radon.ts": [
+        "../src/types.ts"
+      ],
       "../src/mir2markup.ts": [
         "../src/types.ts"
       ],
@@ -1748,9 +1751,6 @@
         "../node_modules/@types/node/ts3.2/fs.d.ts",
         "../node_modules/@types/node/util.d.ts",
         "../node_modules/@types/node/ts3.2/util.d.ts"
-      ],
-      "../src/radon.ts": [
-        "../src/types.ts"
       ]
     },
     "semanticDiagnosticsPerFile": [
@@ -1782,8 +1782,8 @@
       "../node_modules/typescript/lib/lib.esnext.intl.d.ts",
       "../node_modules/typescript/lib/lib.esnext.bigint.d.ts",
       "../src/types.ts",
-      "../src/utils.ts",
       "../src/structures.ts",
+      "../src/utils.ts",
       "../src/markup2mir.ts",
       "../src/mir2markup.ts",
       "../node_modules/@babel/types/lib/index.d.ts",

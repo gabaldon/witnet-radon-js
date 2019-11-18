@@ -38,7 +38,7 @@ export function markup2mir(markup: Markup): Mir {
   const tally: MirScript = generateMirScript(markup.radRequest.tally)
 
   const radRequest: MirRequest = {
-    notBefore: markup.radRequest.notBefore,
+    timelock: markup.radRequest.timelock,
     retrieve,
     aggregate,
     tally,

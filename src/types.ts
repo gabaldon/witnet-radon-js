@@ -86,7 +86,7 @@ export type MarkupInput = {
   hierarchicalType: MarkupHierarchicalType.Argument
   value: string | number | boolean
 }
-
+// TODO: unify markup select and markup selected option
 export type MarkupSelect = {
   id: number
   scriptId: number
@@ -113,7 +113,7 @@ export type MarkupSource = {
 export type MarkupScript = Array<MarkupOperator>
 
 export type MarkupRequest = {
-  notBefore: number
+  timelock: number
   retrieve: Array<MarkupSource>
   aggregate: MarkupScript
   tally: MarkupScript
@@ -236,10 +236,11 @@ export type MirScript = Array<MirOperator>
 export type MirSource = {
   url: string
   script: MirScript
+  kind: string
 }
 
 export type MirRequest = {
-  notBefore: number
+  timelock: number
   retrieve: Array<MirSource>
   aggregate: MirScript
   tally: MirScript
@@ -425,7 +426,7 @@ export type CachedMarkupOperator = CachedMarkupSelect
 export type CachedMarkupScript = Array<CacheRef>
 
 export type CachedMarkupRequest = {
-  notBefore: number
+  timelock: number
   retrieve: Array<CachedMarkupSource>
   aggregate: CachedMarkupScript
   tally: CachedMarkupScript

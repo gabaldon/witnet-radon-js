@@ -101,7 +101,7 @@ export declare type MarkupSource = {
 };
 export declare type MarkupScript = Array<MarkupOperator>;
 export declare type MarkupRequest = {
-    notBefore: number;
+    timelock: number;
     retrieve: Array<MarkupSource>;
     aggregate: MarkupScript;
     tally: MarkupScript;
@@ -200,9 +200,10 @@ export declare type MirScript = Array<MirOperator>;
 export declare type MirSource = {
     url: string;
     script: MirScript;
+    kind: string;
 };
 export declare type MirRequest = {
-    notBefore: number;
+    timelock: number;
     retrieve: Array<MirSource>;
     aggregate: MirScript;
     tally: MirScript;
@@ -373,7 +374,7 @@ export declare type CachedMarkupSelect = {
 export declare type CachedMarkupOperator = CachedMarkupSelect;
 export declare type CachedMarkupScript = Array<CacheRef>;
 export declare type CachedMarkupRequest = {
-    notBefore: number;
+    timelock: number;
     retrieve: Array<CachedMarkupSource>;
     aggregate: CachedMarkupScript;
     tally: CachedMarkupScript;

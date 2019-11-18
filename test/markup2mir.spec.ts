@@ -1118,7 +1118,7 @@ describe('mir2markup', () => {
       name: 'bitcoin',
       description: 'Request the bitcoin price from coindesk, blockchain.info, bitstamp',
       radRequest: {
-        notBefore: 1669852800,
+        timelock: 1669852800,
         retrieve: [
           {
             url: 'https://api.coindesk.com/v1/bpi/currentprice.json',
@@ -1134,7 +1134,7 @@ describe('mir2markup', () => {
       name: 'bitcoin',
       description: 'Request the bitcoin price from coindesk, blockchain.info, bitstamp',
       radRequest: {
-        notBefore: 1669852800,
+        timelock: 1669852800,
         retrieve: [
           {
             url: 'https://api.coindesk.com/v1/bpi/currentprice.json',

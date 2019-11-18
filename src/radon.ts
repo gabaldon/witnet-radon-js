@@ -36,25 +36,28 @@ import {
   CachedMarkupRequest,
   CachedMarkupSource,
   CachedMarkupOperator,
+  OperatorName,
+  ArgumentInfo,
 } from './types'
 
 import { Cache, operatorInfos, typeSystem } from './structures'
-import { markup2mir } from './markup2mir'
+import { markup2mir, findOperatorCode } from './markup2mir'
 
 const filterArgumentOptions = generateFilterArgumentOptions()
 const reducerArgumentOptions = generateReducerArgumentOptions()
 
 // TODO: Create factory functions to remove code repetition
 export class Radon {
-  private cache: Cache<CachedMarkupSelectedOption | Markup | CachedArgument>
+  private cache: Cache<CachedMarkupSelectedOption | CachedArgument | MarkupSelect>
   private cachedMarkup: CachedMarkup
+  private scriptCache: Cache<Array<number>>
 
   constructor(mir?: Mir) {
     const defaultRequest = {
       description: '',
       name: '',
       radRequest: {
-        notBefore: 0,
+        timelock: 0,
         retrieve: [
           {
             script: [],
@@ -67,13 +70,120 @@ export class Radon {
     }
 
     this.cache = new Cache()
+    this.scriptCache = new Cache()
     this.cachedMarkup = mir ? this.mir2markup(mir) : defaultRequest
   }
 
-  public wrapResultInCache(
-    result: Markup | CachedMarkupSelect | CachedMarkupSelectedOption | CachedArgument
+  public saveScriptInCache(script: CachedMarkupScript): CachedMarkupScript {
+    this.scriptCache.insert(script.map(x => x.id))
+
+    return script
+  }
+
+  public addSource() {
+    const scriptIndex = this.scriptCache.getLastIndex()
+    const markupScript = this.saveScriptInCache(this.generateMarkupScript([0x75], scriptIndex))
+
+    this.cachedMarkup.radRequest.retrieve.push({
+      script: markupScript,
+      url: '',
+    } as CachedMarkupSource)
+  }
+
+  public deleteSource(index: number) {
+    if (this.cachedMarkup.radRequest.retrieve[index]) {
+      this.cachedMarkup.radRequest.retrieve.splice(index, 1)
+    }
+  }
+
+  public updateSource(url: string, index: number) {
+    this.cachedMarkup.radRequest.retrieve[index].url = url
+  }
+
+  public updateMarkup(id: number, value: number | string | boolean) {
+    const cachedItem = this.unwrapResultFromCache({ id })
+    if (cachedItem.markupType === MarkupType.Input) {
+      this.updateMarkupInput(id, cachedItem, value)
+    } else {
+      //TODO: remove casting. We sshould store only select instead of select|selected
+      this.updateMarkupSelect(id, cachedItem as CachedMarkupSelect, value as OperatorName)
+    }
+    this.getMarkup
+  }
+
+  public updateMarkupInput(id: number, cachedInput: MarkupInput, value: number | string | boolean) {
+    const newCacheInput: MarkupInput = { ...cachedInput, value }
+    this.updateCacheItem(id, newCacheInput)
+  }
+  // TODO: cache scriptCache
+  public removeNextOperators(scriptId: number, idToRemove: number) {
+    const index = this.scriptCache.get(scriptId).findIndex(x => x === idToRemove)
+    const newScript = this.scriptCache.get(scriptId).slice(index)
+
+    this.scriptCache.set(scriptId, newScript)
+  }
+
+  // TODO: split in two functions
+  public updateMarkupSelect(
+    id: number,
+    cachedSelect: CachedMarkupSelect,
+    value: OperatorName | Filter | Reducer
   ) {
-    return this.cache.set(result)
+    if (cachedSelect.hierarchicalType === MarkupHierarchicalType.Operator) {
+      const operatorCode: MirOperator = findOperatorCode(
+        value as OperatorName,
+        cachedSelect.options.map(option => option.label)
+      )
+
+      const operatorInfo: OperatorInfo = operatorInfos[operatorCode]
+      const defaultArgs: Array<MirArgument> = operatorInfo.arguments.map(arg =>
+        getDefaultMirArgument(arg)
+      )
+      const newSelected = this.generateSelectedOption(
+        operatorInfo,
+        operatorCode,
+        defaultArgs,
+        cachedSelect.scriptId
+      )
+      const newCacheSelect: CachedMarkupSelect = {
+        ...cachedSelect,
+        outputType: newSelected.outputType,
+      }
+      this.updateCacheItem(id, newCacheSelect)
+      //TODO: only cache select indstread of select and selected
+      this.updateCacheItem(cachedSelect.selected.id, newSelected)
+
+      const oldOutputType = cachedSelect.outputType
+      const newOutputType = newSelected.outputType
+
+      if (newOutputType !== oldOutputType) {
+        this.removeNextOperators(cachedSelect.scriptId, id)
+      }
+    } else {
+      const newCacheSelect: CachedMarkupSelect = {
+        ...cachedSelect,
+        label: value,
+      } as CachedMarkupSelect
+      const oldSelected: CachedMarkupSelectedOption = this.unwrapResultFromCache({
+        id,
+      }) as CachedMarkupSelectedOption
+      const newSelected: CachedMarkupSelectedOption = {
+        ...oldSelected,
+        label: value,
+      } as CachedMarkupSelectedOption
+
+      this.updateCacheItem(id, newCacheSelect)
+      //TODO: only cache select indstread of select and selected
+      this.updateCacheItem(cachedSelect.selected.id, newSelected)
+    }
+  }
+
+  public updateCacheItem(id: number, item: CachedMarkupSelectedOption | CachedArgument) {
+    return this.cache.set(id, item)
+  }
+
+  public wrapResultInCache(result: CachedMarkupSelectedOption | CachedArgument) {
+    return this.cache.insert(result)
   }
 
   public unwrapResultFromCache(ref: CacheRef) {
@@ -81,12 +191,19 @@ export class Radon {
   }
 
   public mir2markup(mir: Mir): CachedMarkup {
-    const aggregateScript: CachedMarkupScript = this.generateMarkupScript(mir.radRequest.aggregate)
-    const tallyScript: CachedMarkupScript = this.generateMarkupScript(mir.radRequest.tally)
+    const aggregateScript: CachedMarkupScript = this.saveScriptInCache(
+      this.generateMarkupScript(mir.radRequest.aggregate, this.scriptCache.getLastIndex())
+    )
+
+    const tallyScript: CachedMarkupScript = this.saveScriptInCache(
+      this.generateMarkupScript(mir.radRequest.tally, this.scriptCache.getLastIndex())
+    )
     const radRequest: CachedMarkupRequest = {
-      notBefore: mir.radRequest.notBefore,
+      timelock: mir.radRequest.timelock,
       retrieve: mir.radRequest.retrieve.map((source: MirSource) => {
-        let generatedMarkupScript: CachedMarkupScript = this.generateMarkupScript(source.script)
+        let generatedMarkupScript: CachedMarkupScript = this.saveScriptInCache(
+          this.generateMarkupScript(source.script, this.scriptCache.getLastIndex())
+        )
         return {
           url: source.url,
           script: generatedMarkupScript,
@@ -110,14 +227,12 @@ export class Radon {
 
   public getMarkup(): Markup {
     const cachedRadRequest = this.cachedMarkup.radRequest
-
     const radRequest: MarkupRequest = {
-      notBefore: cachedRadRequest.notBefore,
-      retrieve: cachedRadRequest.aggregate.map(source => this.unwrapSource(source)),
+      timelock: cachedRadRequest.timelock,
+      retrieve: cachedRadRequest.retrieve.map(source => this.unwrapSource(source)),
       aggregate: this.unwrapScript(cachedRadRequest.aggregate),
       tally: this.unwrapScript(cachedRadRequest.tally),
     }
-
     return {
       description: this.cachedMarkup.description,
       name: this.cachedMarkup.name,
@@ -125,26 +240,28 @@ export class Radon {
     }
   }
 
-  public generateMarkupScript(script: MirScript): CachedMarkupScript {
+  public generateMarkupScript(script: MirScript, scriptId: number): CachedMarkupScript {
     const markupScript: CachedMarkupScript = script.map((operator: MirOperator) => {
-      return this.wrapResultInCache(this.generateMarkupOperator(operator))
+      return this.wrapResultInCache(this.generateMarkupOperator(operator, scriptId))
     })
 
     return markupScript
   }
 
-  public generateMarkupOperator(operator: MirOperator): CachedMarkupOperator {
+  public generateMarkupOperator(operator: MirOperator, scriptId: number): CachedMarkupOperator {
     const { code, args } = this.getMirOperatorInfo(operator)
     const operatorInfo: OperatorInfo = operatorInfos[code]
     const outputType = this.findOutputType(code)
 
     const markupOperator: CachedMarkupSelect = {
       id: 0,
-      scriptId: 0,
+      scriptId,
       markupType: MarkupType.Select,
       hierarchicalType: MarkupHierarchicalType.Operator,
       outputType,
-      selected: this.wrapResultInCache(this.generateSelectedOption(operatorInfo, code, args)),
+      selected: this.wrapResultInCache(
+        this.generateSelectedOption(operatorInfo, code, args, scriptId)
+      ),
       options: this.generateMarkupOptions(operatorInfo, code, args),
     }
 
@@ -154,11 +271,13 @@ export class Radon {
   public generateSelectedOption(
     operatorInfo: OperatorInfo,
     code: OperatorCode,
-    args: Array<MirArgument> | null
+    args: Array<MirArgument> | null,
+    scriptId: number
   ): CachedMarkupSelectedOption {
     const outputType = this.findOutputType(code)
     const markupSelectedOption: CachedMarkupSelectedOption = {
-      arguments: args && args.length ? this.generateOperatorArguments(operatorInfo, args) : [],
+      arguments:
+        args && args.length ? this.generateOperatorArguments(operatorInfo, args, scriptId) : [],
       hierarchicalType: MarkupHierarchicalType.SelectedOperatorOption,
       label: operatorInfo.name,
       markupType: MarkupType.Option,
@@ -171,7 +290,8 @@ export class Radon {
 
   public generateOperatorArguments(
     operatorInfo: OperatorInfo,
-    args: Array<MirArgument>
+    args: Array<MirArgument>,
+    scriptId: number
   ): Array<CacheRef> {
     const operatorArguments: Array<CacheRef> = args.map((argument: MirArgument, index: number) => {
       let argumentInfo = operatorInfo.arguments[index]
@@ -193,11 +313,11 @@ export class Radon {
           )
         case MirArgumentKind.Filter:
           return this.wrapResultInCache(
-            this.generateFilterArgument(argumentInfo.name, argument as FilterArgument)
+            this.generateFilterArgument(argumentInfo.name, argument as FilterArgument, scriptId)
           )
         case MirArgumentKind.Reducer:
           return this.wrapResultInCache(
-            this.generateReducerArgument(argumentInfo.name, argument as Reducer)
+            this.generateReducerArgument(argumentInfo.name, argument as Reducer, scriptId)
           )
       }
     })
@@ -214,26 +334,34 @@ export class Radon {
     } as MarkupInput
   }
 
-  public generateFilterArgument(label: string, filter: FilterArgument): CachedMarkupSelect {
+  public generateFilterArgument(
+    label: string,
+    filter: FilterArgument,
+    scriptId: number
+  ): CachedMarkupSelect {
     return {
       hierarchicalType: MarkupHierarchicalType.Argument,
       id: 0,
       markupType: MarkupType.Select,
       options: filterArgumentOptions,
-      scriptId: 0,
+      scriptId,
       label,
       selected: this.wrapResultInCache(this.generateSelectedFilterArgument(filter)),
     } as CachedMarkupSelect
   }
 
-  public generateReducerArgument(label: string, reducer: Reducer): CachedMarkupSelect {
+  public generateReducerArgument(
+    label: string,
+    reducer: Reducer,
+    scriptId: number
+  ): CachedMarkupSelect {
     return {
       hierarchicalType: MarkupHierarchicalType.Argument,
       id: 0,
       markupType: MarkupType.Select,
       options: reducerArgumentOptions,
       outputType: OutputType.Bytes,
-      scriptId: 0,
+      scriptId,
       label,
       selected: this.wrapResultInCache(this.generateSelectedReducerArgument(reducer)),
     } as CachedMarkupSelect
@@ -265,14 +393,10 @@ export class Radon {
     return selectedArgument
   }
 
-  // TODO: Remove unknown to have a stronger type
-  public unwrapSource(source: CacheRef): MarkupSource {
-    const cachedMarkupSource: CachedMarkupSource = (this.unwrapResultFromCache(
-      source
-    ) as unknown) as CachedMarkupSource
+  public unwrapSource(source: CachedMarkupSource): MarkupSource {
     const markupSource: MarkupSource = {
-      url: cachedMarkupSource.url,
-      script: this.unwrapScript(cachedMarkupSource.script),
+      url: source.url,
+      script: this.unwrapScript(source.script),
     }
 
     return markupSource
@@ -420,4 +544,21 @@ function generateReducerArgumentOptions(): Array<MarkupOption> {
     }
   })
   return markupOptions
+}
+
+function getDefaultMirArgument(argumentInfo: ArgumentInfo): MirArgument {
+  const argumentType = argumentInfo.type
+  if (argumentType === MirArgumentKind.Boolean) {
+    return true
+  } else if (argumentType === MirArgumentKind.Integer || argumentType === MirArgumentKind.Bytes) {
+    return 0
+  } else if (argumentType === MirArgumentKind.Filter) {
+    return [0x00, 0]
+  } else if (argumentType === MirArgumentKind.Reducer) {
+    return 0x00
+  } else if (argumentType === MirArgumentKind.Float) {
+    return 0.0
+  } else {
+    return ''
+  }
 }

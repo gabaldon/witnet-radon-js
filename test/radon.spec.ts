@@ -9,6 +9,7 @@ import {
   CachedArgument,
 } from '../src/types'
 import { operatorInfos } from '../src/structures'
+import { MarkupInput } from 'dist/types'
 
 describe('Radon', () => {
   it('generateMarkupScript', () => {
@@ -710,6 +711,37 @@ describe('Radon', () => {
       expect(result).toStrictEqual(selectArgument)
       expect(unwrapResultFromCache).toBeCalledWith(cacheRef)
       expect(unwrapSelectedOption).toBeCalledWith({ id: 2 })
+    })
+  })
+
+  describe('updateMarkup', () => {
+    it.only('updateMarkupInput', () => {
+      const { Radon } = require('../src/radon')
+
+      const updateCacheItem = (Radon.prototype.updateCacheItem = jest.fn())
+
+      const radon = new Radon()
+      const value = 3
+      const id = 1
+      const oldCachedInput: MarkupInput = {
+        hierarchicalType: MarkupHierarchicalType.Argument,
+        id: 0,
+        label: 'label',
+        markupType: MarkupType.Input,
+        value: 5,
+      }
+      const newCachedInput: MarkupInput = {
+        hierarchicalType: MarkupHierarchicalType.Argument,
+        id: 0,
+        label: 'label',
+        markupType: MarkupType.Input,
+        value,
+      }
+
+      const result = radon.updateMarkupInput(id, oldCachedInput, value)
+
+      expect(result).toBe(undefined)
+      expect(updateCacheItem).toBeCalledWith(id, newCachedInput)
     })
   })
 })
