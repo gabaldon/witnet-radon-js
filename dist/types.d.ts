@@ -97,6 +97,7 @@ export declare enum MarkupType {
 export declare type MarkupOperator = MarkupSelect;
 export declare type MarkupArgument = MarkupSelect | MarkupInput;
 export declare type MarkupSource = {
+    kind: string;
     url: string;
     script: MarkupScript;
 };
@@ -381,6 +382,7 @@ export declare type CachedMarkupRequest = {
     tally: ScriptCacheRef;
 };
 export declare type CachedMarkupSource = {
+    kind: string;
     url: string;
     script: ScriptCacheRef;
 };

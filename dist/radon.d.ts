@@ -14,7 +14,7 @@ export declare class Radon {
     updateMarkupSelect(id: number, cachedSelect: CachedMarkupSelect, value: OperatorName | Filter | Reducer): void;
     updateCacheItem(id: number, item: CachedMarkupSelectedOption | CachedArgument): void;
     wrapResultInCache(result: CachedMarkupSelectedOption | CachedArgument): CacheRef;
-    unwrapResultFromCache(ref: CacheRef): MarkupInput | MarkupSelect | CachedMarkupSelect | CachedMarkupSelectedOption;
+    unwrapResultFromCache(ref: CacheRef): CachedMarkupSelectedOption | MarkupInput | CachedMarkupSelect | MarkupSelect;
     mir2markup(mir: Mir): CachedMarkup;
     getMir(): Mir;
     getMarkup(): Markup;
@@ -27,6 +27,7 @@ export declare class Radon {
     generateReducerArgument(label: string, reducer: Reducer, scriptId: number): CachedMarkupSelect;
     generateSelectedFilterArgument(filterArgument: FilterArgument): CachedMarkupSelectedOption;
     generateSelectedReducerArgument(reducer: Reducer): MarkupSelectedOption;
+    readScriptCache(id: number): number[];
     unwrapSource(source: CachedMarkupSource): MarkupSource;
     unwrapScript(script: Array<CacheRef>): MarkupScript;
     unwrapOperator(operator: CachedMarkupOperator, id: number): MarkupOperator;

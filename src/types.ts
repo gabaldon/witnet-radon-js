@@ -108,6 +108,7 @@ export enum MarkupType {
 export type MarkupOperator = MarkupSelect
 export type MarkupArgument = MarkupSelect | MarkupInput
 export type MarkupSource = {
+  kind: string
   url: string
   script: MarkupScript
 }
@@ -435,6 +436,7 @@ export type CachedMarkupRequest = {
 }
 
 export type CachedMarkupSource = {
+  kind: string
   url: string
   script: ScriptCacheRef
 }

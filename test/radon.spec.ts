@@ -7,6 +7,8 @@ import {
   MarkupHierarchicalType,
   MarkupType,
   CachedArgument,
+  CachedMarkupSource,
+  CacheRef,
 } from '../src/types'
 import { operatorInfos } from '../src/structures'
 import { MarkupInput } from 'dist/types'
@@ -28,16 +30,17 @@ describe('Radon', () => {
       .mockReturnValueOnce(7)
       .mockReturnValueOnce(8))
     const wrapResultInCache = (Radon.prototype.wrapResultInCache = jest.fn())
-    radonMarkup.generateMarkupScript(script)
 
-    expect(generateMarkupOperator).toHaveBeenNthCalledWith(1, script[0])
-    expect(generateMarkupOperator).toHaveBeenNthCalledWith(2, script[1])
-    expect(generateMarkupOperator).toHaveBeenNthCalledWith(3, script[2])
-    expect(generateMarkupOperator).toHaveBeenNthCalledWith(4, script[3])
-    expect(generateMarkupOperator).toHaveBeenNthCalledWith(5, script[4])
-    expect(generateMarkupOperator).toHaveBeenNthCalledWith(6, script[5])
-    expect(generateMarkupOperator).toHaveBeenNthCalledWith(7, script[6])
-    expect(generateMarkupOperator).toHaveBeenNthCalledWith(8, script[7])
+    radonMarkup.generateMarkupScript(script, 1)
+
+    expect(generateMarkupOperator).toHaveBeenNthCalledWith(1, script[0], 1)
+    expect(generateMarkupOperator).toHaveBeenNthCalledWith(2, script[1], 1)
+    expect(generateMarkupOperator).toHaveBeenNthCalledWith(3, script[2], 1)
+    expect(generateMarkupOperator).toHaveBeenNthCalledWith(4, script[3], 1)
+    expect(generateMarkupOperator).toHaveBeenNthCalledWith(5, script[4], 1)
+    expect(generateMarkupOperator).toHaveBeenNthCalledWith(6, script[5], 1)
+    expect(generateMarkupOperator).toHaveBeenNthCalledWith(7, script[6], 1)
+    expect(generateMarkupOperator).toHaveBeenNthCalledWith(8, script[7], 1)
 
     expect(wrapResultInCache).toHaveBeenNthCalledWith(1, 1)
     expect(wrapResultInCache).toHaveBeenNthCalledWith(2, 2)
@@ -71,13 +74,14 @@ describe('Radon', () => {
 
       const findOutputType = (Radon.prototype.findOutputType = jest.fn(() => OutputType.Boolean))
 
-      const result = radonMarkup.generateMarkupOperator(operator)
+      const result = radonMarkup.generateMarkupOperator(operator, 1)
       expect(getMirOperatorInfo).toHaveBeenCalledWith(operator)
       expect(findOutputType).toHaveBeenCalledWith(operatorCode)
       expect(generateSelectedOption).toHaveBeenCalledWith(
         operatorInfos[operatorCode],
         operatorCode,
-        args
+        args,
+        1
       )
       expect(generateMarkupOptions).toHaveBeenCalledWith(
         operatorInfos[operatorCode],
@@ -91,7 +95,7 @@ describe('Radon', () => {
         markupType: 'select',
         options: [],
         outputType: 'boolean',
-        scriptId: 0,
+        scriptId: 1,
         selected: { id: 1 },
       })
     })
@@ -118,13 +122,14 @@ describe('Radon', () => {
 
       const findOutputType = (Radon.prototype.findOutputType = jest.fn(() => OutputType.Integer))
 
-      const result = radonMarkup.generateMarkupOperator(operator)
+      const result = radonMarkup.generateMarkupOperator(operator, 1)
       expect(getMirOperatorInfo).toHaveBeenCalledWith(operator)
       expect(findOutputType).toHaveBeenCalledWith(operatorCode)
       expect(generateSelectedOption).toHaveBeenCalledWith(
         operatorInfos[operatorCode],
         operatorCode,
-        args
+        args,
+        1
       )
       expect(generateMarkupOptions).toHaveBeenCalledWith(
         operatorInfos[operatorCode],
@@ -139,7 +144,7 @@ describe('Radon', () => {
         markupType: 'select',
         options: [],
         outputType: 'integer',
-        scriptId: 0,
+        scriptId: 1,
         selected: { id: 1 },
       })
     })
@@ -185,8 +190,8 @@ describe('Radon', () => {
         argument,
       ]))
 
-      const result = radonMarkup.generateSelectedOption(operatorInfo, operatorCode, args)
-      expect(generateOperatorArguments).toHaveBeenCalledWith(operatorInfo, args)
+      const result = radonMarkup.generateSelectedOption(operatorInfo, operatorCode, args, 1)
+      expect(generateOperatorArguments).toHaveBeenCalledWith(operatorInfo, args, 1)
       expect(findOutputType).toHaveBeenCalledWith(operatorCode)
       expect(result).toStrictEqual({
         arguments: [{ id: 1 }],
@@ -209,7 +214,7 @@ describe('Radon', () => {
     const generateSelectedFilterArgument = (Radon.prototype.generateSelectedFilterArgument = jest.fn(
       () => generateSelectedFilterArgumentResult
     ))
-    const result = radonMarkup.generateFilterArgument('function', filterArgs)
+    const result = radonMarkup.generateFilterArgument('function', filterArgs, 1)
     expect(generateSelectedFilterArgument).toBeCalledWith(filterArgs)
     expect(wrapResultInCache).toBeCalledWith(generateSelectedFilterArgumentResult)
     expect(result).toStrictEqual({
@@ -315,7 +320,7 @@ describe('Radon', () => {
           outputType: 'bytes',
         },
       ],
-      scriptId: 0,
+      scriptId: 1,
       selected: {
         id: 1,
       },
@@ -333,14 +338,19 @@ describe('Radon', () => {
     const generateSelectedReducerArgument = (Radon.prototype.generateSelectedReducerArgument = jest.fn(
       () => generateSelectedReducerArgumentResult
     ))
-    const result = radonMarkup.generateReducerArgument('function', reducerCode)
+    const result = radonMarkup.generateReducerArgument('function', reducerCode, 1)
     expect(generateSelectedReducerArgument).toBeCalledWith(reducerCode)
     expect(wrapResultInCache).toBeCalledWith(generateSelectedReducerArgumentResult)
     expect(result).toStrictEqual({
       hierarchicalType: 'argument',
       id: 0,
       label: 'function',
+      scriptId: 1,
       markupType: 'select',
+      outputType: OutputType.Bytes,
+      selected: {
+        id: 1,
+      },
       options: [
         {
           hierarchicalType: 'operatorOption',
@@ -409,11 +419,6 @@ describe('Radon', () => {
           outputType: 'bytes',
         },
       ],
-      scriptId: 0,
-      outputType: OutputType.Bytes,
-      selected: {
-        id: 1,
-      },
     })
   })
 
@@ -475,17 +480,26 @@ describe('Radon', () => {
   it('unwrapSource', () => {
     const { Radon } = require('../src/radon')
     const radonMarkup = new Radon()
-    const cacheRef = { id: 1 }
-    const unwrapResultFromCache = (Radon.prototype.unwrapResultFromCache = jest.fn(() => ({
+    const cachedMarkupSource = {
+      kind: '',
       url: 'url',
-      script: [{ id: 2 }],
-    })))
-    const unwrapScript = (Radon.prototype.unwrapScript = jest.fn(() => [{}]))
-    const result = radonMarkup.unwrapSource(cacheRef)
+      script: { id: 2 },
+    } as CachedMarkupSource
 
-    expect(result).toStrictEqual({ url: 'url', script: [{}] })
-    expect(unwrapResultFromCache).toBeCalledWith({ id: 1 })
-    expect(unwrapScript).toBeCalledWith([{ id: 2 }])
+    const markupSource = {
+      kind: '',
+      url: 'url',
+      script: [{}],
+    }
+
+    const unwrapScript = (Radon.prototype.unwrapScript = jest.fn(() => [{}]))
+    const readScriptCache = (Radon.prototype.readScriptCache = jest.fn(() => [5, 6]))
+
+    const result = radonMarkup.unwrapSource(cachedMarkupSource)
+
+    expect(result).toStrictEqual(markupSource)
+    expect(readScriptCache).toBeCalledWith(2)
+    expect(unwrapScript).toBeCalledWith([{ id: 5 }, { id: 6 }] as Array<CacheRef>)
   })
 
   it('unwrapScript', () => {
@@ -715,7 +729,7 @@ describe('Radon', () => {
   })
 
   describe('updateMarkup', () => {
-    it.only('updateMarkupInput', () => {
+    it('updateMarkupInput', () => {
       const { Radon } = require('../src/radon')
 
       const updateCacheItem = (Radon.prototype.updateCacheItem = jest.fn())

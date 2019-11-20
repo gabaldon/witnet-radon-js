@@ -753,6 +753,7 @@ describe('mir2markup', () => {
 
   it('generateMirSource should return the correct mir', () => {
     const expected = {
+      kind: '',
       script: [69, 116, [97, 'bpi'], 116, [97, 'rate'], 114],
       url: 'url',
     }
@@ -1107,6 +1108,7 @@ describe('mir2markup', () => {
     ] as Array<MarkupSelect>
 
     const markupSource = {
+      kind: '',
       script: markupScript,
       url: 'url',
     }
@@ -1121,6 +1123,7 @@ describe('mir2markup', () => {
         timelock: 1669852800,
         retrieve: [
           {
+            kind: '',
             url: 'https://api.coindesk.com/v1/bpi/currentprice.json',
             script: [69, 116, [97, 'bpi'], 116, [97, 'VSD'], 116, [97, 'rate_float'], 114],
           },
@@ -1137,6 +1140,7 @@ describe('mir2markup', () => {
         timelock: 1669852800,
         retrieve: [
           {
+            kind: '',
             url: 'https://api.coindesk.com/v1/bpi/currentprice.json',
             script: [
               {

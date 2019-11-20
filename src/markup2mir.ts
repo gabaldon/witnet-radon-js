@@ -57,6 +57,7 @@ export function generateMirSources(markupSources: Array<MarkupSource>): Array<Mi
     return {
       script: generateMirScript(source.script),
       url: source.url,
+      kind: source.kind,
     } as MirSource
   })
 

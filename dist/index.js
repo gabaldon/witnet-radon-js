@@ -11,21 +11,3 @@ exports.default = {
     markup2mir: markup2mir_1.markup2mir,
     mir2markup: mir2markup_1.mir2markup,
 };
-var dr = {
-    name: '',
-    description: '',
-    radRequest: {
-        timelock: 0,
-        retrieve: [
-            {
-                url: '',
-                kind: 'HTTP-GET',
-                script: [0x45],
-            },
-        ],
-        aggregate: [0x50],
-        tally: [0x50],
-    },
-};
-var result = new radon_1.Radon(dr);
-console.log(result.getMarkup());

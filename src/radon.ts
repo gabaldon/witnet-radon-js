@@ -66,6 +66,7 @@ export class Radon {
           {
             script: this.scriptCache.insert([]),
             url: '',
+            kind: '',
           },
         ],
         aggregate: this.scriptCache.insert([]),
@@ -397,10 +398,15 @@ export class Radon {
     return selectedArgument
   }
 
+  public readScriptCache(id: number) {
+    return this.scriptCache.get(id)
+  }
+
   public unwrapSource(source: CachedMarkupSource): MarkupSource {
     const markupSource: MarkupSource = {
+      kind: source.kind,
       url: source.url,
-      script: this.unwrapScript(this.scriptCache.get(source.script.id).map(id => ({ id }))),
+      script: this.unwrapScript(this.readScriptCache(source.script.id).map(id => ({ id }))),
     }
 
     return markupSource

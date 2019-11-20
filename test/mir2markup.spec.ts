@@ -1295,6 +1295,7 @@ describe('mir2markup', () => {
         timelock: 1669852800,
         retrieve: [
           {
+            kind: '',
             url: 'https://api.coindesk.com/v1/bpi/currentprice.json',
             script: [69, 116, [97, 'bpi'], 116, [97, 'VSD'], 116, [97, 'rate_float'], 114],
           },

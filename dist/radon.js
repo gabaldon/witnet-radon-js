@@ -31,6 +31,7 @@ var Radon = /** @class */ (function () {
                     {
                         script: this.scriptCache.insert([]),
                         url: '',
+                        kind: '',
                     },
                 ],
                 aggregate: this.scriptCache.insert([]),
@@ -273,10 +274,14 @@ var Radon = /** @class */ (function () {
         };
         return selectedArgument;
     };
+    Radon.prototype.readScriptCache = function (id) {
+        return this.scriptCache.get(id);
+    };
     Radon.prototype.unwrapSource = function (source) {
         var markupSource = {
+            kind: source.kind,
             url: source.url,
-            script: this.unwrapScript(this.scriptCache.get(source.script.id).map(function (id) { return ({ id: id }); })),
+            script: this.unwrapScript(this.readScriptCache(source.script.id).map(function (id) { return ({ id: id }); })),
         };
         return markupSource;
     };
