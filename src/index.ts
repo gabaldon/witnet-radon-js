@@ -26,7 +26,7 @@ const dr: Mir = {
     aggregate: [0x50],
     tally: [0x50],
   },
-} 
+}
 
 const result = new Radon(dr)
 console.log(result.getMarkup())

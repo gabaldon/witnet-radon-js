@@ -110,11 +110,11 @@
         "signature": "63b66918290d794f73832a6d0325be5026236674fe8c0cb0b68d162000d7bbe8"
       },
       "../src/types.ts": {
-        "version": "26563f9872f9d443dcfc19ad8d2872c487f6ee404465861bc6da992b82fb4112",
-        "signature": "7e4ba12f36826c503ec2a3f23476d4931df94879366f29a039c0dd6cc124e9fa"
+        "version": "6d4671ebac21a35b3d495a9f134f143866f74420ae4e9bbb5c414fec7e49b1c4",
+        "signature": "ea8d6094186048673705de7df71650f064ee490a680914b07e88090abbf7e823"
       },
       "../src/structures.ts": {
-        "version": "a7fc4aafed6aa6a3d0680ee19f1e911732c1b43ffb8ef3592dcdee79b0bd16a0",
+        "version": "8563b22f7daa0956186e69cf5c7b311b7ee57bd986126ca730440d81d5f90e7d",
         "signature": "274913c9f8120be71c19fe01604856094710990f68a930d56636d3aa9fc14666"
       },
       "../src/utils.ts": {
@@ -126,15 +126,15 @@
         "signature": "5fecc778b239e348362f645383ea1ff5ef497d21daa4969fb18905c8a9e0985b"
       },
       "../src/radon.ts": {
-        "version": "e61051be4064f06729ab3e7b3faa6ad0ce14b3f2733c70c4deaf7016375d606e",
-        "signature": "31857c439008940cf223b6a18f1ba02025ffbe6ac7dc9ec36b1ade667eea5acf"
+        "version": "57a1a0b18b4519512815de34e52c370d1e8efabbc46686807ac2382d674a82ba",
+        "signature": "daed61b14b2eeca797ff0d377589c829fb03a91a0a981daa1a1247ff93385a2b"
       },
       "../src/mir2markup.ts": {
         "version": "c99b643d306a64b2f2aa8e3ed2851ae15aa9cd426a21e772cd4682234c1ca583",
         "signature": "04d375bdd67189c9e35677be9b0c6172df66388322324a78bcf1113ffc019cd7"
       },
       "../src/index.ts": {
-        "version": "374be3454fd46d627919e73dce55d91e1ddd08d7671b68c858435126505e0e02",
+        "version": "606a65c9f9942b2ebf1d15ef75847e3b88138e93b6a53330b15b1a64ab5341bf",
         "signature": "1e9d2925f866ca06bbc5ce6e11a40753cd16bdef78c462977ea4740e42fa1393"
       },
       "../node_modules/@babel/types/lib/index.d.ts": {
@@ -1781,13 +1781,9 @@
       "../node_modules/typescript/lib/lib.es2018.regexp.d.ts",
       "../node_modules/typescript/lib/lib.esnext.intl.d.ts",
       "../node_modules/typescript/lib/lib.esnext.bigint.d.ts",
-      "../src/types.ts",
-      "../src/structures.ts",
       "../src/utils.ts",
       "../src/markup2mir.ts",
-      "../src/radon.ts",
       "../src/mir2markup.ts",
-      "../src/index.ts",
       "../node_modules/@babel/types/lib/index.d.ts",
       "../node_modules/@types/babel__generator/index.d.ts",
       "../node_modules/@types/babel__traverse/index.d.ts",
@@ -1848,7 +1844,11 @@
       "../node_modules/@types/node/ts3.2/index.d.ts",
       "../node_modules/@types/stack-utils/index.d.ts",
       "../node_modules/@types/yargs-parser/index.d.ts",
-      "../node_modules/@types/yargs/index.d.ts"
+      "../node_modules/@types/yargs/index.d.ts",
+      "../src/types.ts",
+      "../src/structures.ts",
+      "../src/radon.ts",
+      "../src/index.ts"
     ]
   },
   "version": "3.6.4"

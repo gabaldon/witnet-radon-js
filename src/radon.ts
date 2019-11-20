@@ -38,6 +38,7 @@ import {
   CachedMarkupOperator,
   OperatorName,
   ArgumentInfo,
+  ScriptCacheRef,
 } from './types'
 
 import { Cache, operatorInfos, typeSystem } from './structures'
@@ -53,6 +54,9 @@ export class Radon {
   private scriptCache: Cache<Array<number>>
 
   constructor(mir?: Mir) {
+    this.cache = new Cache()
+    this.scriptCache = new Cache()
+
     const defaultRequest = {
       description: '',
       name: '',
@@ -60,32 +64,28 @@ export class Radon {
         timelock: 0,
         retrieve: [
           {
-            script: [],
+            script: this.scriptCache.insert([]),
             url: '',
           },
         ],
-        aggregate: [],
-        tally: [],
+        aggregate: this.scriptCache.insert([]),
+        tally: this.scriptCache.insert([]),
       },
     }
 
-    this.cache = new Cache()
-    this.scriptCache = new Cache()
     this.cachedMarkup = mir ? this.mir2markup(mir) : defaultRequest
   }
 
-  public saveScriptInCache(script: CachedMarkupScript): CachedMarkupScript {
-    this.scriptCache.insert(script.map(x => x.id))
-
-    return script
+  public saveScriptInCache(script: CachedMarkupScript): ScriptCacheRef {
+    return this.scriptCache.insert(script.map(x => x.id))
   }
 
   public addSource() {
     const scriptIndex = this.scriptCache.getLastIndex()
-    const markupScript = this.saveScriptInCache(this.generateMarkupScript([0x75], scriptIndex))
+    const scripCachetRef = this.saveScriptInCache(this.generateMarkupScript([0x75], scriptIndex))
 
     this.cachedMarkup.radRequest.retrieve.push({
-      script: markupScript,
+      script: scripCachetRef,
       url: '',
     } as CachedMarkupSource)
   }
@@ -191,17 +191,17 @@ export class Radon {
   }
 
   public mir2markup(mir: Mir): CachedMarkup {
-    const aggregateScript: CachedMarkupScript = this.saveScriptInCache(
+    const aggregateScript: ScriptCacheRef = this.saveScriptInCache(
       this.generateMarkupScript(mir.radRequest.aggregate, this.scriptCache.getLastIndex())
     )
 
-    const tallyScript: CachedMarkupScript = this.saveScriptInCache(
+    const tallyScript: ScriptCacheRef = this.saveScriptInCache(
       this.generateMarkupScript(mir.radRequest.tally, this.scriptCache.getLastIndex())
     )
     const radRequest: CachedMarkupRequest = {
       timelock: mir.radRequest.timelock,
       retrieve: mir.radRequest.retrieve.map((source: MirSource) => {
-        let generatedMarkupScript: CachedMarkupScript = this.saveScriptInCache(
+        let generatedMarkupScript: ScriptCacheRef = this.saveScriptInCache(
           this.generateMarkupScript(source.script, this.scriptCache.getLastIndex())
         )
         return {
@@ -227,12 +227,16 @@ export class Radon {
 
   public getMarkup(): Markup {
     const cachedRadRequest = this.cachedMarkup.radRequest
+
     const radRequest: MarkupRequest = {
       timelock: cachedRadRequest.timelock,
       retrieve: cachedRadRequest.retrieve.map(source => this.unwrapSource(source)),
-      aggregate: this.unwrapScript(cachedRadRequest.aggregate),
-      tally: this.unwrapScript(cachedRadRequest.tally),
+      aggregate: this.unwrapScript(
+        this.scriptCache.get(cachedRadRequest.aggregate.id).map(id => ({ id }))
+      ),
+      tally: this.unwrapScript(this.scriptCache.get(cachedRadRequest.tally.id).map(id => ({ id }))),
     }
+
     return {
       description: this.cachedMarkup.description,
       name: this.cachedMarkup.name,
@@ -396,7 +400,7 @@ export class Radon {
   public unwrapSource(source: CachedMarkupSource): MarkupSource {
     const markupSource: MarkupSource = {
       url: source.url,
-      script: this.unwrapScript(source.script),
+      script: this.unwrapScript(this.scriptCache.get(source.script.id).map(id => ({ id }))),
     }
 
     return markupSource

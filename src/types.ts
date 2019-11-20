@@ -63,6 +63,8 @@ export enum MarkupHierarchicalType {
   Argument = 'argument',
 }
 
+export type ScriptCacheRef = CacheRef
+
 export type MarkupOption = {
   hierarchicalType: MarkupHierarchicalType.OperatorOption
   label: string
@@ -428,13 +430,13 @@ export type CachedMarkupScript = Array<CacheRef>
 export type CachedMarkupRequest = {
   timelock: number
   retrieve: Array<CachedMarkupSource>
-  aggregate: CachedMarkupScript
-  tally: CachedMarkupScript
+  aggregate: ScriptCacheRef
+  tally: ScriptCacheRef
 }
 
 export type CachedMarkupSource = {
   url: string
-  script: CachedMarkupScript
+  script: ScriptCacheRef
 }
 
 export type CachedMarkup = {

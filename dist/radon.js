@@ -20,6 +20,8 @@ var reducerArgumentOptions = generateReducerArgumentOptions();
 // TODO: Create factory functions to remove code repetition
 var Radon = /** @class */ (function () {
     function Radon(mir) {
+        this.cache = new structures_1.Cache();
+        this.scriptCache = new structures_1.Cache();
         var defaultRequest = {
             description: '',
             name: '',
@@ -27,27 +29,24 @@ var Radon = /** @class */ (function () {
                 timelock: 0,
                 retrieve: [
                     {
-                        script: [],
+                        script: this.scriptCache.insert([]),
                         url: '',
                     },
                 ],
-                aggregate: [],
-                tally: [],
+                aggregate: this.scriptCache.insert([]),
+                tally: this.scriptCache.insert([]),
             },
         };
-        this.cache = new structures_1.Cache();
-        this.scriptCache = new structures_1.Cache();
         this.cachedMarkup = mir ? this.mir2markup(mir) : defaultRequest;
     }
     Radon.prototype.saveScriptInCache = function (script) {
-        this.scriptCache.insert(script.map(function (x) { return x.id; }));
-        return script;
+        return this.scriptCache.insert(script.map(function (x) { return x.id; }));
     };
     Radon.prototype.addSource = function () {
         var scriptIndex = this.scriptCache.getLastIndex();
-        var markupScript = this.saveScriptInCache(this.generateMarkupScript([0x75], scriptIndex));
+        var scripCachetRef = this.saveScriptInCache(this.generateMarkupScript([0x75], scriptIndex));
         this.cachedMarkup.radRequest.retrieve.push({
-            script: markupScript,
+            script: scripCachetRef,
             url: '',
         });
     };
@@ -151,8 +150,8 @@ var Radon = /** @class */ (function () {
         var radRequest = {
             timelock: cachedRadRequest.timelock,
             retrieve: cachedRadRequest.retrieve.map(function (source) { return _this.unwrapSource(source); }),
-            aggregate: this.unwrapScript(cachedRadRequest.aggregate),
-            tally: this.unwrapScript(cachedRadRequest.tally),
+            aggregate: this.unwrapScript(this.scriptCache.get(cachedRadRequest.aggregate.id).map(function (id) { return ({ id: id }); })),
+            tally: this.unwrapScript(this.scriptCache.get(cachedRadRequest.tally.id).map(function (id) { return ({ id: id }); })),
         };
         return {
             description: this.cachedMarkup.description,
@@ -277,7 +276,7 @@ var Radon = /** @class */ (function () {
     Radon.prototype.unwrapSource = function (source) {
         var markupSource = {
             url: source.url,
-            script: this.unwrapScript(source.script),
+            script: this.unwrapScript(this.scriptCache.get(source.script.id).map(function (id) { return ({ id: id }); })),
         };
         return markupSource;
     };

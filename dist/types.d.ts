@@ -58,6 +58,7 @@ export declare enum MarkupHierarchicalType {
     OperatorOption = "operatorOption",
     Argument = "argument"
 }
+export declare type ScriptCacheRef = CacheRef;
 export declare type MarkupOption = {
     hierarchicalType: MarkupHierarchicalType.OperatorOption;
     label: string;
@@ -376,12 +377,12 @@ export declare type CachedMarkupScript = Array<CacheRef>;
 export declare type CachedMarkupRequest = {
     timelock: number;
     retrieve: Array<CachedMarkupSource>;
-    aggregate: CachedMarkupScript;
-    tally: CachedMarkupScript;
+    aggregate: ScriptCacheRef;
+    tally: ScriptCacheRef;
 };
 export declare type CachedMarkupSource = {
     url: string;
-    script: CachedMarkupScript;
+    script: ScriptCacheRef;
 };
 export declare type CachedMarkup = {
     name: string;

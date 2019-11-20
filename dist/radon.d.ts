@@ -1,10 +1,10 @@
-import { Markup, Mir, MirScript, MirOperator, OperatorInfo, MarkupSelect, OperatorCode, MirArgument, MarkupOption, MarkupSelectedOption, MarkupInput, FilterArgument, OutputType, Reducer, Filter, CacheRef, MarkupSource, MarkupScript, MarkupOperator, MarkupArgument, CachedMarkupSelectedOption, CachedArgument, CachedMarkup, CachedMarkupSelect, CachedMarkupScript, CachedMarkupSource, CachedMarkupOperator, OperatorName } from './types';
+import { Markup, Mir, MirScript, MirOperator, OperatorInfo, MarkupSelect, OperatorCode, MirArgument, MarkupOption, MarkupSelectedOption, MarkupInput, FilterArgument, OutputType, Reducer, Filter, CacheRef, MarkupSource, MarkupScript, MarkupOperator, MarkupArgument, CachedMarkupSelectedOption, CachedArgument, CachedMarkup, CachedMarkupSelect, CachedMarkupScript, CachedMarkupSource, CachedMarkupOperator, OperatorName, ScriptCacheRef } from './types';
 export declare class Radon {
     private cache;
     private cachedMarkup;
     private scriptCache;
     constructor(mir?: Mir);
-    saveScriptInCache(script: CachedMarkupScript): CachedMarkupScript;
+    saveScriptInCache(script: CachedMarkupScript): ScriptCacheRef;
     addSource(): void;
     deleteSource(index: number): void;
     updateSource(url: string, index: number): void;
@@ -14,7 +14,7 @@ export declare class Radon {
     updateMarkupSelect(id: number, cachedSelect: CachedMarkupSelect, value: OperatorName | Filter | Reducer): void;
     updateCacheItem(id: number, item: CachedMarkupSelectedOption | CachedArgument): void;
     wrapResultInCache(result: CachedMarkupSelectedOption | CachedArgument): CacheRef;
-    unwrapResultFromCache(ref: CacheRef): CachedMarkupSelectedOption | MarkupInput | CachedMarkupSelect | MarkupSelect;
+    unwrapResultFromCache(ref: CacheRef): MarkupInput | MarkupSelect | CachedMarkupSelect | CachedMarkupSelectedOption;
     mir2markup(mir: Mir): CachedMarkup;
     getMir(): Mir;
     getMarkup(): Markup;
