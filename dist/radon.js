@@ -148,14 +148,12 @@ var Radon = /** @class */ (function () {
     Radon.prototype.getMarkup = function () {
         var _this = this;
         var cachedRadRequest = this.cachedMarkup.radRequest;
-        console.log('start', cachedRadRequest.retrieve[0]);
         var radRequest = {
             timelock: cachedRadRequest.timelock,
             retrieve: cachedRadRequest.retrieve.map(function (source) { return _this.unwrapSource(source); }),
             aggregate: this.unwrapScript(cachedRadRequest.aggregate),
             tally: this.unwrapScript(cachedRadRequest.tally),
         };
-        console.log('end');
         return {
             description: this.cachedMarkup.description,
             name: this.cachedMarkup.name,

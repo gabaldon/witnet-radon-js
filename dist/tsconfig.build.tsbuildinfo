@@ -114,7 +114,7 @@
         "signature": "7e4ba12f36826c503ec2a3f23476d4931df94879366f29a039c0dd6cc124e9fa"
       },
       "../src/structures.ts": {
-        "version": "8563b22f7daa0956186e69cf5c7b311b7ee57bd986126ca730440d81d5f90e7d",
+        "version": "a7fc4aafed6aa6a3d0680ee19f1e911732c1b43ffb8ef3592dcdee79b0bd16a0",
         "signature": "274913c9f8120be71c19fe01604856094710990f68a930d56636d3aa9fc14666"
       },
       "../src/utils.ts": {
@@ -126,7 +126,7 @@
         "signature": "5fecc778b239e348362f645383ea1ff5ef497d21daa4969fb18905c8a9e0985b"
       },
       "../src/radon.ts": {
-        "version": "08d142f26340c9ffbe9ce68c5e967e4e88f8fb5e83aee1fc433d18dec94d7a65",
+        "version": "e61051be4064f06729ab3e7b3faa6ad0ce14b3f2733c70c4deaf7016375d606e",
         "signature": "31857c439008940cf223b6a18f1ba02025ffbe6ac7dc9ec36b1ade667eea5acf"
       },
       "../src/mir2markup.ts": {
@@ -1785,7 +1785,9 @@
       "../src/structures.ts",
       "../src/utils.ts",
       "../src/markup2mir.ts",
+      "../src/radon.ts",
       "../src/mir2markup.ts",
+      "../src/index.ts",
       "../node_modules/@babel/types/lib/index.d.ts",
       "../node_modules/@types/babel__generator/index.d.ts",
       "../node_modules/@types/babel__traverse/index.d.ts",
@@ -1846,9 +1848,7 @@
       "../node_modules/@types/node/ts3.2/index.d.ts",
       "../node_modules/@types/stack-utils/index.d.ts",
       "../node_modules/@types/yargs-parser/index.d.ts",
-      "../node_modules/@types/yargs/index.d.ts",
-      "../src/radon.ts",
-      "../src/index.ts"
+      "../node_modules/@types/yargs/index.d.ts"
     ]
   },
   "version": "3.6.4"
