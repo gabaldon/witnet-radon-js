@@ -91,6 +91,49 @@ export class Radon {
     } as CachedMarkupSource)
   }
 
+  public addOperator(scriptId: number) {
+    //last cached operator
+    const cacheByScriptId = this.scriptCache.get(scriptId)
+    //ref to cache
+    const lastOperatorRef = cacheByScriptId[cacheByScriptId.length - 1]
+    //operator in chache as CachedMarkupOperator type
+    const cachedSelected: CachedMarkupOperator = this.unwrapResultFromCache({id: lastOperatorRef}) as CachedMarkupOperator
+    //output type
+    const outputType: OutputType  = Array.isArray(cachedSelected.outputType) ? cachedSelected.outputType[0]: cachedSelected.outputType
+    //Need Markup Select Structure and look into that to create operator
+    let mirOperator: MirOperator = 0x70
+    if (outputType === OutputType.Boolean){
+      mirOperator = [0x10, '', '']
+    } else if (outputType === OutputType.Integer) {
+      mirOperator = 0x20
+    } else if (outputType === OutputType.Float) {
+      mirOperator = 0x30
+    } else if (outputType === OutputType.String) {
+      mirOperator = 0x40
+    } else if (outputType === OutputType.Array) {
+      mirOperator = 0x50
+    } else if (outputType === OutputType.Map) {
+      mirOperator = 0x60
+    } else if (outputType === OutputType.Bytes) {
+      mirOperator = 0x70
+    } else if (outputType === OutputType.Result) {
+      mirOperator = 0x80
+    } else if (outputType === OutputType.Inner) {
+      mirOperator = 0x70
+    } else if (outputType === OutputType.Argument) {
+      mirOperator = 0x70
+    } else if (outputType === OutputType.Passthrough) {
+      mirOperator = 0x70
+    }
+    //generate markup operator with operator
+    //TODO: move this Cache logic to its own Cache method
+    const cachedMarkupOperator = this.generateMarkupOperator(mirOperator, scriptId)
+    const operatorRef = this.wrapResultInCache(cachedMarkupOperator)
+    const newCacheScript = this.scriptCache.get(scriptId)
+    newCacheScript.push(operatorRef.id)
+    this.scriptCache.set(scriptId, newCacheScript)
+  }
+
   public deleteSource(index: number) {
     if (this.cachedMarkup.radRequest.retrieve[index]) {
       this.cachedMarkup.radRequest.retrieve.splice(index, 1)
@@ -420,7 +463,6 @@ export class Radon {
 
       return operator
     })
-
     return markupScript
   }
 
