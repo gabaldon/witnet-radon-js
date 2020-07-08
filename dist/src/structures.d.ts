@@ -120,12 +120,14 @@ export declare const aTReducerMarkupOptions: () => {
     outputType: OutputType;
 }[];
 export declare const allMarkupOptions: {
-    hierarchicalType: string;
     label: string;
-    markupType: string;
-    outputType: OutputType;
 }[];
 export declare const markupOptions: {
     [key: string]: Array<any>;
 };
+export declare function removeRepeatedOptions(array: Array<{
+    label: string;
+}>): {
+    label: string;
+}[];
 //# sourceMappingURL=structures.d.ts.map
